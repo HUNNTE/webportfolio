@@ -11,6 +11,15 @@
   --mario-shadow: #1D3557;
   --mario-coin: #FFD700;
   --mario-soil: #5D4037;
+  --mario-mushroom: #FF6347;
+  --mario-fire: #FF4500;
+  --mario-star: linear-gradient(45deg, #FFD700, #FF69B4, #00FF00, #00BFFF);
+  --mario-goomba: #A52A2A;
+  --mario-koopa: #228B22;
+  --mario-brick: #D2691E;
+  --mario-question: #FFD700;
+  --mario-grass: #228B22;
+  --mario-hill: #32CD32;
 
   /* UI & Effects */
   --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -25,6 +34,9 @@
   --delay: 0.2s;
   --pipe-height: 120px;
   --brick-size: 20px;
+  --mushroom-size: 40px;
+  --coin-size: 30px;
+  --star-size: 35px;
 }
 
 * {
@@ -45,12 +57,40 @@ body {
   overflow-x: hidden;
   background: var(--mario-sky);
   background-image: 
+    /* Clouds layer */
+    radial-gradient(circle at 20% 30%, var(--mario-cloud) 5%, transparent 6%),
+    radial-gradient(circle at 50% 20%, var(--mario-cloud) 8%, transparent 9%),
+    radial-gradient(circle at 80% 40%, var(--mario-cloud) 6%, transparent 7%),
+    /* Hills layer */
+    radial-gradient(ellipse at 10% 100%, var(--mario-hill) 10%, transparent 11%),
+    radial-gradient(ellipse at 40% 100%, var(--mario-hill) 15%, transparent 16%),
+    radial-gradient(ellipse at 70% 100%, var(--mario-hill) 12%, transparent 13%),
+    /* Grass/soil layer */
+    linear-gradient(to top, var(--mario-soil) 5%, var(--mario-grass) 5%, var(--mario-grass) 8%, transparent 8%),
+    /* Brick pattern */
     repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(168, 218, 220, 0.3) 2px, rgba(168, 218, 220, 0.3) 4px),
-    linear-gradient(var(--mario-brown) 2px, transparent 2px),
-    linear-gradient(90deg, var(--mario-brown) 2px, transparent 2px);
-  background-size: auto, var(--brick-size) var(--brick-size), var(--brick-size) var(--brick-size);
+    linear-gradient(var(--mario-brick) 2px, transparent 2px),
+    linear-gradient(90deg, var(--mario-brick) 2px, transparent 2px);
+  background-size: 
+    /* Clouds */ 100% 100%, 100% 100%, 100% 100%,
+    /* Hills */ 100% 20%, 100% 25%, 100% 22%,
+    /* Grass */ 100% 100%,
+    /* Bricks */ auto, var(--brick-size) var(--brick-size), var(--brick-size) var(--brick-size);
   background-position: 0 0;
+  background-repeat: repeat-x, repeat;
   position: relative;
+  -webkit-overflow-scrolling: touch;
+  animation: parallax-bg 60s linear infinite;
+}
+
+@keyframes parallax-bg {
+  0% { background-position-x: 0, 0, 0, 0, -50px, -100px, 0, 0, 0, 0; }
+  100% { background-position-x: -200px, -150px, -100px, -80px, -60px, -40px, 0, 0, 0, 0; }
+}
+
+img {
+  max-width: 100%;
+  height: auto;
 }
 
 /* ===== CONTAINER ===== */
@@ -86,7 +126,7 @@ body {
 }
 
 .logo {
-  font-size: 1rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: var(--mario-red);
   text-decoration: none;
@@ -142,10 +182,16 @@ nav a:hover::before {
 
 nav a:hover {
   color: var(--mario-red);
-  background: var(--mario-yellow);
+  background: var(--mario-question);
   border: 2px solid var(--mario-brown);
   transform: translateY(-2px);
   box-shadow: 0 4px 0 var(--mario-brown);
+  animation: question-bounce 0.5s ease;
+}
+
+@keyframes question-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
 }
 
 .menu-toggle {
@@ -168,7 +214,7 @@ nav a:hover {
   background: linear-gradient(135deg, var(--mario-cloud) 0%, var(--mario-sky) 50%, #d0f0fd 100%);
 }
 
-#home::before, #home::after {
+#home::before, #home::after, #home .extra-cloud {
   content: '☁️';
   position: absolute;
   font-size: 2rem;
@@ -186,6 +232,11 @@ nav a:hover {
   opacity: 0.6;
   animation: floatCloud 20s linear infinite reverse;
 }
+#home .extra-cloud {
+  top: 35%; left: 30%;
+  font-size: 2.5rem;
+  animation: floatCloud 18s linear infinite;
+}
 
 @keyframes floatCloud {
   0% { transform: translateX(-100vw); }
@@ -193,7 +244,12 @@ nav a:hover {
 }
 
 /* Pipe & Coin */
-.pipe-container { position: absolute; right: 10%; bottom: -60px; z-index: 1; }
+.pipe-container { 
+  position: absolute; 
+  right: 10%; 
+  bottom: -60px; 
+  z-index: 1; 
+}
 .pipe {
   width: 80px;
   height: var(--pipe-height);
@@ -218,7 +274,7 @@ nav a:hover {
   bottom: calc(var(--pipe-height) + 10px);
   right: 15%;
   width: 50px; height: 50px;
-  background: var(--mario-yellow);
+  background: var(--mario-question);
   border: 4px solid var(--mario-brown);
   border-radius: 6px;
   box-shadow: 0 4px 0 var(--mario-brown);
@@ -228,14 +284,88 @@ nav a:hover {
   animation: pop-up 1.5s infinite alternate;
   z-index: 2;
 }
-.coin-block::after { content: "★"; font-size: 1.4rem; }
+.coin-block::after { content: "?"; font-size: 1.8rem; color: var(--mario-brown); }
 
-/* Animations */
-@keyframes float-coin {
-  0%, 100% { transform: translateY(0) rotate(-10deg); }
-  50% { transform: translateY(-10px) rotate(5deg); }
+/* Mushroom Decoration */
+.mushroom-decor {
+  position: absolute;
+  bottom: 10%;
+  left: 15%;
+  width: var(--mushroom-size);
+  height: var(--mushroom-size);
+  background: var(--mario-mushroom);
+  border-radius: 50% 50% 0 0;
+  box-shadow: 0 4px 0 var(--mario-brown);
+  animation: bounce-mushroom 2s infinite ease-in-out;
+  z-index: 1;
+}
+.mushroom-decor::before {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 20px;
+  background: #FFF5EE;
+  border-radius: 0 0 50% 50%;
+}
+.mushroom-decor::after {
+  content: '• • •';
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  font-size: 0.8rem;
 }
 
+@keyframes bounce-mushroom {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-15px) scale(1.05); }
+}
+
+/* Goomba Enemy Decoration */
+.goomba-decor {
+  position: absolute;
+  bottom: 5%;
+  right: 25%;
+  width: 50px;
+  height: 40px;
+  background: var(--mario-goomba);
+  border-radius: 50% / 100% 100% 0 0;
+  box-shadow: 0 4px 0 var(--mario-brown);
+  animation: walk-goomba 4s linear infinite;
+  z-index: 1;
+}
+.goomba-decor::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 10px;
+  width: 30px;
+  height: 20px;
+  background: #FFF;
+  border-radius: 50%;
+  box-shadow: inset 0 -5px 0 #000;
+}
+.goomba-decor::after {
+  content: '>';
+  position: absolute;
+  bottom: -10px;
+  left: 5px;
+  color: #000;
+  font-size: 1rem;
+  transform: rotate(90deg);
+}
+
+@keyframes walk-goomba {
+  0% { transform: translateX(0); }
+  50% { transform: translateX(50px); }
+  100% { transform: translateX(0); }
+}
+
+/* Animations */
 @keyframes pop-up {
   0% { transform: translateY(0) scale(1); }
   100% { transform: translateY(-15px) scale(1.05); }
@@ -272,6 +402,12 @@ nav a:hover {
   100% { transform: rotate(360deg); }
 }
 
+@keyframes star-twinkle {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.2); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
 /* Hero Text & Image */
 .hero-text {
   max-width: 50%;
@@ -287,20 +423,6 @@ nav a:hover {
   letter-spacing: -1px;
   text-shadow: 4px 4px 0 var(--mario-shadow);
   animation: jump 2s infinite alternate ease-in-out;
-}
-
-.hero-text .tag-badge {
-  display: inline-block;
-  background: #444;
-  color: var(--mario-yellow);
-  font-size: 0.8rem;
-  font-weight: bold;
-  padding: 4px 10px;
-  border-radius: 6px;
-  margin-bottom: 0.8rem;
-  box-shadow: 0 3px 0 #000, inset 0 -2px 0 rgba(255,255,255,0.3);
-  text-shadow: 1px 1px 0 #000;
-  animation: pulse 1.8s infinite;
 }
 
 .hero-text .posisi {
@@ -351,12 +473,23 @@ nav a:hover {
   animation: float-coin 1.8s infinite;
 }
 
+@keyframes float-coin {
+  0%, 100% { transform: translateY(0) rotate(-10deg); }
+  50% { transform: translateY(-10px) rotate(5deg); }
+}
 
 .btn-cv:hover {
   transform: translateY(-6px) scale(1.05);
   box-shadow: 0 12px 0 var(--mario-brown);
   background: #ff4757;
   filter: brightness(1.1);
+  animation: fire-power 0.5s ease;
+}
+
+@keyframes fire-power {
+  0% { background: var(--mario-red); }
+  50% { background: var(--mario-fire); }
+  100% { background: #ff4757; }
 }
 
 .btn-cv:active {
@@ -518,6 +651,15 @@ nav a:hover {
   transform: rotate(10deg);
 }
 
+#tentang .extra-decor {
+  content: "🍄 🍄";
+  position: absolute;
+  top: 50%;
+  left: 5%;
+  font-size: 2rem;
+  animation: bounce-mushroom 3s infinite;
+}
+
 @keyframes float-slow {
   0%, 100% { transform: translateY(0) rotate(-5deg); }
   50% { transform: translateY(-12px) rotate(5deg); }
@@ -534,7 +676,6 @@ nav a:hover {
   line-height: 1.85;
 }
 
-/* Animasi scale + glow */
 @keyframes textGlow {
   0% { text-shadow: 0 0 0 rgba(255, 215, 0, 0); transform: scale(1); }
   50% { text-shadow: 0 0 15px rgba(255, 215, 0, 0.5); transform: scale(1.02); }
@@ -545,6 +686,7 @@ nav a:hover {
 #projek {
   padding: 7rem 0;
   background: var(--mario-sky);
+  position: relative;
 }
 
 #projek::before {
@@ -560,6 +702,26 @@ nav a:hover {
   border: 2px solid black;
   box-shadow: 2px 2px 0 black;
   animation: float-coin 3s infinite;
+}
+
+#projek .question-block-decor {
+  position: absolute;
+  top: 30%;
+  right: 5%;
+  width: 50px;
+  height: 50px;
+  background: var(--mario-question);
+  border: 4px solid var(--mario-brown);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: var(--mario-brown);
+  animation: question-bounce 1s infinite;
+  z-index: 1;
+}
+#projek .question-block-decor::after {
+  content: "?";
 }
 
 .project-nav {
@@ -608,8 +770,18 @@ nav a:hover {
   opacity: 0;
   transform: translateY(30px);
   animation: fadeUp 0.6s forwards;
-  animation-delay: calc(var(--delay) * var(--i, 2));
   border: 2px solid var(--mario-brown);
+  position: relative;
+}
+
+.projek-card::after {
+  content: "★";
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 1.2rem;
+  color: var(--mario-coin);
+  animation: star-twinkle 2s infinite;
 }
 
 .projek-card:hover {
@@ -674,6 +846,36 @@ nav a:hover {
 #layanan {
   padding: 7rem 0;
   background: var(--mario-cloud);
+  position: relative;
+}
+
+#layanan .koopa-decor {
+  position: absolute;
+  bottom: 10%;
+  left: 20%;
+  width: 60px;
+  height: 50px;
+  background: var(--mario-koopa);
+  border-radius: 50% / 100% 100% 0 0;
+  box-shadow: 0 4px 0 var(--mario-brown);
+  animation: slide-koopa 5s linear infinite;
+  z-index: 1;
+}
+#layanan .koopa-decor::before {
+  content: '';
+  position: absolute;
+  top: -15px;
+  left: 10px;
+  width: 40px;
+  height: 30px;
+  background: #90EE90;
+  border-radius: 50%;
+  box-shadow: inset 0 -5px 0 #228B22;
+}
+
+@keyframes slide-koopa {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(100px); }
 }
 
 .layanan-grid {
@@ -728,10 +930,17 @@ nav a:hover {
   line-height: 1.7;
 }
 
+.layanan-icon {
+  font-size: 3rem;
+  color: var(--mario-green);
+  margin-bottom: 1rem;
+  animation: pulse 1.5s infinite;
+}
+
 /* ===== TESTIMONI ===== */
 #Testimoni {
   padding: 8rem 2rem;
-  background: var(--mario-sky); /* Sesuai tema */
+  background: var(--mario-sky);
   position: relative;
 }
 
@@ -746,6 +955,17 @@ nav a:hover {
   padding: 4px 10px;
   border-radius: 6px;
   box-shadow: 2px 2px 0 black;
+}
+
+#Testimoni .star-decor {
+  position: absolute;
+  top: 40%;
+  left: 15%;
+  width: var(--star-size);
+  height: var(--star-size);
+  background: var(--mario-star);
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  animation: spin 2s linear infinite, star-twinkle 1s infinite;
 }
 
 .container-testimoni {
@@ -807,6 +1027,7 @@ nav a:hover {
   object-fit: cover;
   border: 4px solid var(--mario-yellow);
   box-shadow: 0 4px 0 var(--mario-brown);
+  animation: pulse 2s infinite;
 }
 
 .testimoni-content h3 {
@@ -827,13 +1048,12 @@ nav a:hover {
 /* ===== CONTACT ===== */
 #kontak {
   padding: 8rem 2rem;
-  background: var(--mario-sky); /* Biru langit Mario */
+  background: var(--mario-sky);
   position: relative;
 }
 
 #kontak::before {
   content: "WORK WITH ME";
-  margin-left: 32.5rem;
   position: absolute;
   top: 20px;
   left: 50%;
@@ -845,6 +1065,36 @@ nav a:hover {
   border-radius: 6px;
   border: 2px solid black;
   box-shadow: 2px 2px 0 black;
+}
+
+#kontak .fire-flower-decor {
+  position: absolute;
+  top: 20%;
+  right: 10%;
+  width: 40px;
+  height: 40px;
+  background: var(--mario-fire);
+  border-radius: 50%;
+  box-shadow: 0 4px 0 var(--mario-brown);
+  animation: flame 1s infinite;
+  z-index: 1;
+}
+#kontak .fire-flower-decor::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 30px;
+  background: #FF8C00;
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+}
+
+@keyframes flame {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 .contact-info {
@@ -890,6 +1140,7 @@ nav a:hover {
   font-size: 1.2rem;
   border: 2px solid var(--mario-brown);
   box-shadow: 0 4px 0 var(--mario-brown);
+  animation: spin 3s linear infinite;
 }
 
 .contact-item a {
@@ -934,6 +1185,15 @@ footer::before {
   padding: 4px 10px;
   border-radius: 6px;
   box-shadow: 0 4px 0 var(--mario-brown);
+}
+
+footer .coin-decor {
+  position: absolute;
+  bottom: 10px;
+  right: 10%;
+  font-size: 1.5rem;
+  color: var(--mario-coin);
+  animation: spin 1s linear infinite;
 }
 
 .footer-links {
@@ -988,38 +1248,61 @@ footer::before {
   margin-bottom: 0.5rem;
 }
 
-/* ===== RESPONSIVE ===== */
+/* ===== RESPONSIVE DESIGN ===== */
 @media (max-width: 768px) {
   .menu-toggle { display: block; }
   nav { order: 2; }
   #navbar { display: none; }
-  #navbar.show { display: block; position: absolute; top: 100%; left: 0; right: 0; background: var(--mario-cloud); box-shadow: var(--shadow-md); border-radius: 0 0 15px 15px; border: 3px solid var(--mario-brown); }
-  #home { flex-direction: column; text-align: center; padding: 6rem 1rem; gap: 2rem; }
+  #navbar.show {
+    display: block;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--mario-cloud);
+    box-shadow: var(--shadow-md);
+    border-radius: 0 0 15px 15px;
+    border: 3px solid var(--mario-brown);
+  }
+  #home {
+    flex-direction: column;
+    text-align: center;
+    padding: 6rem 1rem 4rem;
+    gap: 2rem;
+  }
   .hero-text, .hero-image { max-width: 100%; }
-  .hero-text h1 { font-size: 2.5rem; }
-  .hero-text .posisi { font-size: 1.3rem; }
-  .section-title { font-size: 2.2rem; }
+  .hero-text h1 { font-size: 2.3rem; }
+  .hero-text .posisi { font-size: 1.2rem; }
+  .btn-cv { padding: 14px 30px; font-size: 0.9rem; }
+  .social-links { justify-content: center; }
+  .pipe-container { right: 50%; transform: translateX(50%); bottom: -40px; }
+  .section-title { font-size: 2.1rem; }
   .project-nav { gap: 0.8rem; margin-bottom: 2rem; }
   .project-btn { padding: 10px 20px; font-size: 0.9rem; }
-  .projek-grid, .layanan-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+  .projek-grid, .layanan-grid { grid-template-columns: 1fr; gap: 1.8rem; }
   .projek-card img { height: 180px; }
+  .testimoni-card { flex-direction: column; text-align: center; }
+  .testimoni-image { width: 100px; height: 100px; }
+  #kontak { padding: 6rem 1rem; }
   .contact-item { flex-direction: column; text-align: center; }
   .contact-icon { margin-bottom: 0.5rem; }
   .footer-links { gap: 1.5rem; }
   .container { padding: 0 1rem; }
+  .mushroom-decor, .goomba-decor, .koopa-decor, .fire-flower-decor { display: none; } /* Hide heavy decors on mobile */
 }
 
 @media (max-width: 480px) {
-  .hero-text h1 { font-size: 2.2rem; }
-  .btn-cv { padding: 14px 30px; font-size: 0.9rem; }
+  .hero-text h1 { font-size: 2rem; }
+  .btn-cv { padding: 12px 26px; font-size: 0.85rem; }
   .social-links a { width: 44px; height: 44px; }
-  .section-title { font-size: 2rem; }
+  .social-links svg { width: 20px; height: 20px; }
+  .section-title { font-size: 1.9rem; }
+  .project-btn { padding: 8px 16px; font-size: 0.8rem; }
   .footer-links { gap: 1rem; font-size: 0.9rem; }
+  .brick-block { display: none; }
 }
 
-/* ===== MARIO ULTIMATE DECORATIONS ===== */
-
-/* === Coin Particle Animation (on click) === */
+/* ===== PARTICLES & EFFECTS ===== */
 .coin-particle {
   position: fixed;
   font-size: 1.2rem;
@@ -1034,14 +1317,22 @@ footer::before {
   100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
 }
 
-/* === Brick Block in Hero (floating) === */
+.star-particle {
+  position: fixed;
+  font-size: 1rem;
+  color: var(--mario-coin);
+  pointer-events: none;
+  z-index: 9999;
+  animation: float-up 1.2s forwards;
+}
+
 .brick-block {
   position: absolute;
   top: 20%;
   left: 5%;
   width: 30px;
   height: 30px;
-  background: var(--mario-brown);
+  background: var(--mario-brick);
   border: 2px solid #5a2e0d;
   box-shadow: inset 2px 2px 0 #a0522d;
   z-index: 0;
@@ -1053,47 +1344,24 @@ footer::before {
   50% { transform: translateY(-20px) rotate(5deg); }
 }
 
-
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.2; }
-}
-
-/* === Cloud === */
-#home::before {
-  content: '☁️';
-  position: absolute;
-  font-size: 2rem;
-  opacity: 0.7;
-  z-index: 0;
-  top: 10%;
-  left: 5%;
-  animation: floatCloud 15s linear infinite;
-}
-
-/* === Star Particle on Scroll === */
-.star-particle {
+/* Additional Particle: Fire Spark */
+.fire-particle {
   position: fixed;
-  font-size: 1rem;
-  color: var(--mario-coin);
+  width: 10px;
+  height: 10px;
+  background: var(--mario-fire);
+  border-radius: 50%;
   pointer-events: none;
   z-index: 9999;
-  animation: float-up 1.2s forwards;
+  animation: spark-up 0.8s forwards;
 }
 
-/* === Floating Mushroom in About === */
-#tentang::before {
-  content: "🍄";
-  position: absolute;
-  top: 8%;
-  right: 8%;
-  font-size: 4rem;
-  opacity: 0.15;
-  animation: float-slow 5s infinite ease-in-out;
-  z-index: 1;
+@keyframes spark-up {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-80px) scale(0.5); opacity: 0; }
 }
 
-/* === Scroll Bar Mario Style === */
+/* ===== SCROLLBAR ===== */
 ::-webkit-scrollbar {
   width: 12px;
 }
@@ -1110,41 +1378,4 @@ footer::before {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #ff4757;
-}
-
-/* basic skills */
-.layanan-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
-  margin-top: 2rem;
-}
-
-.layanan-card {
-  background: #fff;
-  padding: 2rem;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  transition: transform 0.3s ease;
-}
-
-.layanan-card:hover {
-  transform: translateY(-10px);
-}
-
-.layanan-icon {
-  font-size: 3rem;
-  color: #38A34A;
-  margin-bottom: 1rem;
-}
-
-.layanan-card h3 {
-  margin-bottom: 1rem;
-  color: #333;
-}
-
-.layanan-card p {
-  color: #666;
-  line-height: 1.6;
 }
